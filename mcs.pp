@@ -20,12 +20,20 @@ class profiles::mcs(
 
   create_resources(package, $packages, $package_defaults)
 
-file {'config-file':
+file {'mcsconfig':
   ensure => present,
-  path   => '/tmp/config-file',
+  path   => '/tmp/mcsconfig.txt',
   owner  => 'root',
   group  => 'root',
   mode   => '0644',
-  source => 'puppet:///modules/yourmodule/config-file',
+  source => 'puppet:///modules/yourmodule/mcsconfig.txt',
 }
+
+Exec {'configure-mcs':
+  command => '/usr/local/mcs/mcs_configure.sh </tmp/mcsconfig.txt',
+}
+
+# Ensures that the file is created before running the command
+File['mcsconfig'] -> Exec['configure-mcs']
+
 }
